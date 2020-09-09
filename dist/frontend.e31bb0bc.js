@@ -25712,9 +25712,7 @@ const startUp = async () => {
     const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/100"));
     console.log('data fetched');
     const response = await result.json();
-    const tweets = response.body; // shows the bubbles animation on the bottom
-
-    console.log(tweets);
+    const tweets = response.body;
     console.log('starting predictions'); // shows warning
 
     document.getElementById("warning").style.display = "block";
@@ -25726,7 +25724,6 @@ const startUp = async () => {
     document.getElementById("results-title").style.visibility = "visible"; // hides warning
 
     document.getElementById("warning").style.display = "none";
-    console.log(predictions);
     let found = false;
     predictions.map(p => {
       if (p.toxicity !== false) {
