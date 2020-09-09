@@ -2,7 +2,7 @@
   "name": "toxicity_demo",
   "version": "0.0.4",
   "description": "",
-  "main": "index.js",
+  "main": "dist/frontend.391f5bcf.js",
   "license": "Apache-2.0",
   "private": true,
   "engines": {
