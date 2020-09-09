@@ -54,11 +54,7 @@ const startUp = async () => {
         const tweets = response.body;
 
 
-        // shows the bubbles animation on the bottom
-        console.log(tweets);
-
         console.log('starting predictions');
-
         // shows warning
         document.getElementById("warning").style.display="block";
         const start = Date.now();
@@ -72,10 +68,7 @@ const startUp = async () => {
         // hides warning
         document.getElementById("warning").style.display="none";
 
-        console.log(predictions);
-
         let found = false;
-
         predictions.map((p) => {
           if(p.toxicity !== false) {
             found = true;
