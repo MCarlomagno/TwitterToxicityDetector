@@ -1,16 +1,6 @@
-# Toxicity classifier demo
-
-## Contents
-
-The demo shows how to use predictions produced by the Toxicity classifier.
+# Toxicity classifier
 
 ## Setup
-
-cd into the demos folder:
-
-```sh
-cd toxicity/demos
-```
 
 Install dependencies and prepare the build directory:
 
