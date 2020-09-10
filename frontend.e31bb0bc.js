@@ -25671,6 +25671,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 const enviroment = 'https://toxicity-classifier-server.herokuapp.com';
 const enviromentDev = 'http://localhost:8080';
 let model;
+let tweetsToSearch = 10;
 
 const classify = async inputs => {
   const results = await model.classify(inputs);
@@ -25692,13 +25693,26 @@ const notFound = () => {
   results.appendChild(element);
 };
 
+const onTweetsNumberChange = e => {
+  tweetsToSearch = e.target.value;
+
+  if (tweetsToSearch > 20) {
+    // shows tweet number warning
+    document.getElementById("tweets-number-warning").style.display = "block";
+  } else {
+    // hides tweet number warning
+    document.getElementById("tweets-number-warning").style.display = "none";
+  }
+};
+
 const startUp = async () => {
   // shows loader and hides main
   document.getElementById("loader").style.display = "block"; // loads the model
 
-  model = await toxicity.load(0.7, 'toxicity'); // hides loader and shows main
+  model = await toxicity.load(0.7, ['toxicity']); // hides loader and shows main
 
-  document.getElementById("loader").style.display = "none"; // listen the search event and fetchs twits
+  document.getElementById("loader").style.display = "none";
+  document.getElementById('select').onchange = onTweetsNumberChange; // listen the search event and fetchs twits
 
   document.querySelector('#search-button').addEventListener('click', async e => {
     // shows loader and hides results
@@ -25709,7 +25723,7 @@ const startUp = async () => {
     const text = document.querySelector('#twitter-user-input').value;
     console.log("searching tweets from ".concat(text)); // fetch tweets from server
 
-    const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/10"));
+    const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/").concat(tweetsToSearch));
     console.log('data fetched');
     const response = await result.json();
     const tweets = response.body; // shows the bubbles animation on the bottom
