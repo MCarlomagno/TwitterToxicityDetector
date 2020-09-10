@@ -25705,59 +25705,66 @@ const onTweetsNumberChange = e => {
   }
 };
 
-const startUp = async () => {
-  // shows loader and hides main
-  document.getElementById("loader").style.display = "block"; // loads the model
+const fetchTweets = async text => {
+  console.log("searching tweets from ".concat(text)); // fetch tweets from server
 
+  const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/").concat(tweetsToSearch));
+  const response = await result.json();
+  return response.body;
+};
+
+const showResults = predictions => {
+  let found = false;
+  predictions.map(p => {
+    if (p.toxicity !== false) {
+      found = true;
+      var results = document.getElementById("results");
+      var element = document.createElement('p');
+      element.textContent = p.text;
+      results.appendChild(element);
+    }
+  });
+
+  if (!found) {
+    notFound();
+  }
+};
+
+const viewOnLoading = () => {
+  document.getElementById("results-title").style.visibility = "hidden";
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("results").innerHTML = "";
+};
+
+const viewOnFinish = () => {
+  document.getElementById("results-title").style.visibility = "hidden";
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("results").innerHTML = "";
+};
+
+const startUp = async () => {
+  document.getElementById("loader").style.display = "block";
   model = await toxicity.load(0.7, ['toxicity']); // hides loader and shows main
 
   document.getElementById("loader").style.display = "none";
   document.getElementById('select').onchange = onTweetsNumberChange; // listen the search event and fetchs twits
 
   document.querySelector('#search-button').addEventListener('click', async e => {
-    // shows loader and hides results
-    document.getElementById("results-title").style.visibility = "hidden";
-    document.getElementById("loader").style.display = "block";
-    document.getElementById("results").innerHTML = ""; // takes the value of the text field
-
+    // takes the value of the text field
     const text = document.querySelector('#twitter-user-input').value;
-    console.log("searching tweets from ".concat(text)); // fetch tweets from server
 
-    const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/").concat(tweetsToSearch));
-    console.log('data fetched');
-    const response = await result.json();
-    const tweets = response.body; // shows the bubbles animation on the bottom
+    if (text.length > 0) {
+      // shows loader and hides results
+      viewOnLoading();
+      const tweets = await fetchTweets(text); // shows warning
 
-    console.log(tweets);
-    console.log('starting predictions'); // shows warning
+      document.getElementById("warning").style.display = "block";
+      let predictions = [];
+      predictions = await classify(tweets); // shows loader and hides results
 
-    document.getElementById("warning").style.display = "block";
-    const start = Date.now();
-    let predictions = [];
-    predictions = await classify(tweets); // hides loader and shows results
-
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("results-title").style.visibility = "visible"; // hides warning
-
-    document.getElementById("warning").style.display = "none";
-    console.log(predictions);
-    let found = false;
-    predictions.map(p => {
-      if (p.toxicity !== false) {
-        found = true;
-        var results = document.getElementById("results");
-        var element = document.createElement('p');
-        element.textContent = p.text;
-        results.appendChild(element);
-      }
-    });
-
-    if (!found) {
-      notFound();
+      viewOnFinish();
+      showResults(predictions);
     }
-
-    const millis = Date.now() - start;
-    console.log("seconds elapsed = ".concat(Math.floor(millis / 1000)));
   });
 };
 
