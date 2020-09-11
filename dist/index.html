@@ -10,15 +10,28 @@
 
 <body>
   <h1>Twitter toxicity detector ☣️</h1>
-  <div class="description">This page uses Twitter API and Tensorflow.js to detect toxicity on the first 100 twits of the
-    given user, <a href="https://github.com/MCarlomagno" target="_blank">more info</a>. </div>
+  <div class="description">This page uses Twitter API and Tensorflow.js to detect toxicity on the last 10, 20, 50 or 100 tweets of
+    the
+    given user, <a href="https://github.com/MCarlomagno/toxicity-classifier" target="_blank">more info</a>. </div>
+  <div class="select">
+    Tweets to search
+    <select id="select">
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+    <div class="tweets-number-warning" id="tweets-number-warning">Keep in mind that it may not work on devices with less processing
+      power</div>
+  </div>
   <div id="input">
     <span id="at-sign">@</span>
     <input id="twitter-user-input" placeholder="i.e. 'realDonaldTrump'">
     <div id="search-button">Search tweets</div>
   </div>
   <div class="loader" id="loader"></div>
-  <div id="warning"> <img src="/warning.8208f5b7.png" width="20px" alt="warning">The performance of the browser may be altered for a few seconds because the model requires expensive processing.</div>
+  <div id="warning"> <img src="/warning.8208f5b7.png" width="20px" alt="warning">The model requires expensive processing so the performance of the browser may be
+    altered for a few seconds.</div>
   <h3 id="results-title">Toxic tweets detected</h3>
   <div id="results"></div>
   <script src="/frontend.e31bb0bc.js"></script>

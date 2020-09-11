@@ -71,9 +71,9 @@ const viewOnLoading = () => {
 }
 
 const viewOnFinish = () => {
-    document.getElementById("results-title").style.visibility = "hidden";
-    document.getElementById("loader").style.display="block";
-    document.getElementById("results").innerHTML = "";
+    document.getElementById("results-title").style.visibility = "visible";
+    document.getElementById("loader").style.display="none";
+    document.getElementById("warning").style.display="none";
 }
 
 const startUp = async () => {
