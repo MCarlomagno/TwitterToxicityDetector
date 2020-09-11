@@ -121,3 +121,18 @@ h1 {
 #results-title {
   visibility: hidden;
 }
+
+.select {
+  padding: 10px;
+  text-align:center;
+}
+
+.tweets-number-warning {
+  display: none;
+  background: #FFEB3B;
+  color: black;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 10px;
+  display: none;
+}

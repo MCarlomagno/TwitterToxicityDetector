@@ -25669,8 +25669,9 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 const enviroment = 'https://toxicity-classifier-server.herokuapp.com';
-const enviromentDev = 'http://localhost:3000';
+const enviromentDev = 'http://localhost:8080';
 let model;
+let tweetsToSearch = 10;
 
 const classify = async inputs => {
   const results = await model.classify(inputs);
@@ -25692,55 +25693,78 @@ const notFound = () => {
   results.appendChild(element);
 };
 
-const startUp = async () => {
-  // shows loader and hides main
-  document.getElementById("loader").style.display = "block"; // loads the model
+const onTweetsNumberChange = e => {
+  tweetsToSearch = e.target.value;
 
+  if (tweetsToSearch > 20) {
+    // shows tweet number warning
+    document.getElementById("tweets-number-warning").style.display = "block";
+  } else {
+    // hides tweet number warning
+    document.getElementById("tweets-number-warning").style.display = "none";
+  }
+};
+
+const fetchTweets = async text => {
+  console.log("searching tweets from ".concat(text)); // fetch tweets from server
+
+  const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/").concat(tweetsToSearch));
+  const response = await result.json();
+  return response.body;
+};
+
+const showResults = predictions => {
+  let found = false;
+  predictions.map(p => {
+    if (p.toxicity !== false) {
+      found = true;
+      var results = document.getElementById("results");
+      var element = document.createElement('p');
+      element.textContent = p.text;
+      results.appendChild(element);
+    }
+  });
+
+  if (!found) {
+    notFound();
+  }
+};
+
+const viewOnLoading = () => {
+  document.getElementById("results-title").style.visibility = "hidden";
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("results").innerHTML = "";
+};
+
+const viewOnFinish = () => {
+  document.getElementById("results-title").style.visibility = "visible";
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("warning").style.display = "none";
+};
+
+const startUp = async () => {
+  document.getElementById("loader").style.display = "block";
   model = await toxicity.load(0.7, ['toxicity']); // hides loader and shows main
 
-  document.getElementById("loader").style.display = "none"; // listen the search event and fetchs twits
+  document.getElementById("loader").style.display = "none";
+  document.getElementById('select').onchange = onTweetsNumberChange; // listen the search event and fetchs twits
 
   document.querySelector('#search-button').addEventListener('click', async e => {
-    // shows loader and hides results
-    document.getElementById("results-title").style.visibility = "hidden";
-    document.getElementById("loader").style.display = "block";
-    document.getElementById("results").innerHTML = ""; // takes the value of the text field
-
+    // takes the value of the text field
     const text = document.querySelector('#twitter-user-input').value;
-    console.log("searching tweets from ".concat(text)); // fetch tweets from server
 
-    const result = await fetch("".concat(enviroment, "/twits/").concat(text, "/100"));
-    console.log('data fetched');
-    const response = await result.json();
-    const tweets = response.body;
-    console.log('starting predictions'); // shows warning
+    if (text.length > 0) {
+      // shows loader and hides results
+      viewOnLoading();
+      const tweets = await fetchTweets(text); // shows warning
 
-    document.getElementById("warning").style.display = "block";
-    const start = Date.now();
-    let predictions = [];
-    predictions = await classify(tweets); // hides loader and shows results
+      document.getElementById("warning").style.display = "block";
+      let predictions = [];
+      predictions = await classify(tweets); // shows loader and hides results
 
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("results-title").style.visibility = "visible"; // hides warning
-
-    document.getElementById("warning").style.display = "none";
-    let found = false;
-    predictions.map(p => {
-      if (p.toxicity !== false) {
-        found = true;
-        var results = document.getElementById("results");
-        var element = document.createElement('p');
-        element.textContent = p.text;
-        results.appendChild(element);
-      }
-    });
-
-    if (!found) {
-      notFound();
+      viewOnFinish();
+      showResults(predictions);
     }
-
-    const millis = Date.now() - start;
-    console.log("seconds elapsed = ".concat(Math.floor(millis / 1000)));
   });
 };
 
