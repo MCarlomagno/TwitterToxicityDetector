@@ -1,3 +1,7 @@
+<div align="center">
+<img src="https://raw.githubusercontent.com/MCarlomagno/TwitterToxicityDetector/master/assets/banner.png" alt="banner image"/>
+</div>
+
 # Twitter Toxicity Detector
 Web app written in Vanilla JS and Tensorflow.js that detects toxicity in the last tweets from the given user.
 
